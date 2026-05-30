@@ -1328,19 +1328,29 @@
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `test-report-${new Date().toISOString().split('T')[0]}.json`;
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+            link.download = `test-report-${dateStr}-${timeStr}.json`;
             link.click();
             alert('✅ Test report saved! File: ' + link.download);
         }
 
         function generateTestReport(progress) {
+            const now = new Date();
             const completed = Object.values(progress).filter(p => p.completed).length;
             const total = Object.keys(progress).length;
             return {
-                timestamp: new Date().toISOString(),
+                metadata: {
+                    timestamp: now.toISOString(),
+                    date: now.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                    time: now.toLocaleTimeString('en-US', { hour12: true }),
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                },
                 summary: {
                     totalTests: total,
                     completed: completed,
+                    incomplete: total - completed,
                     percentage: total > 0 ? Math.round((completed / total) * 100) : 0
                 },
                 details: progress
