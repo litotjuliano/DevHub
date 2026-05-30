@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus DevHub - Development Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #0066cc 0%, #00a89a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .project-nav {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .project-btn {
+            padding: 12px 28px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            min-width: 160px;
+            text-align: center;
+        }
+
+        .project-btn:hover {
+            border-color: rgba(0, 102, 204, 0.6);
+            background: rgba(0, 102, 204, 0.1);
+            color: #60a5fa;
+            transform: translateY(-2px);
+        }
+
+        .project-btn.active {
+            background: linear-gradient(135deg, #0066cc 0%, #00a89a 100%);
+            border-color: rgba(0, 102, 204, 0.8);
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 102, 204, 0.3);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .action-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .project-info {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .project-info strong {
+            color: #60a5fa;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .service-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-running {
+            background: rgba(0, 200, 0, 0.2);
+            color: #4ade80;
+        }
+
+        .status-stopped {
+            background: rgba(200, 0, 0, 0.2);
+            color: #f87171;
+        }
+
+        .service-description {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .service-info {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #cbd5e1;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .service-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .control-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .control-btn.build {
+            background: rgba(100, 150, 255, 0.2);
+            color: #60a5fa;
+            border-color: rgba(100, 150, 255, 0.3);
+        }
+
+        .control-btn.start {
+            background: rgba(0, 200, 0, 0.2);
+            color: #4ade80;
+            border-color: rgba(0, 200, 0, 0.3);
+        }
+
+        .control-btn.stop {
+            background: rgba(255, 100, 100, 0.2);
+            color: #f87171;
+            border-color: rgba(255, 100, 100, 0.3);
+        }
+
+        .quick-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-link {
+            flex: 1;
+            min-width: 150px;
+            padding: 10px;
+            border: 1px solid rgba(0, 200, 200, 0.3);
+            background: rgba(0, 200, 200, 0.1);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #4dd0e1;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .quick-link:hover {
+            background: rgba(0, 200, 200, 0.2);
+            border-color: rgba(0, 200, 200, 0.6);
+        }
+
+        .status-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #60a5fa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0066cc 0%, #00a89a 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .task-list {
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .task-done {
+            background: rgba(0, 200, 0, 0.2);
+            color: #4ade80;
+        }
+
+        .task-pending {
+            background: rgba(255, 165, 0, 0.2);
+            color: #fbbf24;
+        }
+
+        .doc-link {
+            display: inline-block;
+            padding: 10px 16px;
+            background: rgba(0, 200, 200, 0.15);
+            border: 1px solid rgba(0, 200, 200, 0.3);
+            border-radius: 6px;
+            color: #4dd0e1;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 5px 5px 5px 0;
+        }
+
+        .doc-link:hover {
+            background: rgba(0, 200, 200, 0.25);
+            border-color: rgba(0, 200, 200, 0.6);
+        }
+
+        .logs-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+
+        .logs-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #f1f5f9;
+        }
+
+        .logs-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid rgba(255, 255, 255, 0.1);
+            padding-left: 10px;
+        }
+
+        .log-info {
+            color: #94a3b8;
+        }
+
+        .log-success {
+            color: #4ade80;
+            border-left-color: #4ade80;
+        }
+
+        .log-warning {
+            color: #facc15;
+            border-left-color: #facc15;
+        }
+
+        .log-error {
+            color: #f87171;
+            border-left-color: #f87171;
+        }
+
+        .credentials-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+        }
+
+        .credentials-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #f1f5f9;
+        }
+
+        .credential-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+        }
+
+        .credential-label {
+            color: #94a3b8;
+            display: inline-block;
+            width: 100px;
+        }
+
+        .credential-value {
+            color: #4ade80;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 2px 8px;
+            background: rgba(0, 200, 200, 0.2);
+            border: 1px solid rgba(0, 200, 200, 0.3);
+            border-radius: 3px;
+            color: #4dd0e1;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 200, 200, 0.3);
+            border-color: rgba(0, 200, 200, 0.6);
+        }
+
+        .port-link {
+            color: #4dd0e1;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px dotted #4dd0e1;
+        }
+
+        .port-link:hover {
+            color: #67e8f9;
+            border-bottom-color: #67e8f9;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Nexus DevHub</h1>
+            <p class="subtitle">Unified Development Environment Manager</p>
+            <p style="color: #60a5fa; font-size: 12px; margin-top: 10px;">Created by Lito Juliano</p>
+            <div class="project-nav" id="projectNav">
+                <!-- Project buttons will be generated here -->
+            </div>
+        </header>
+
+        <div class="project-info" id="projectInfo">
+            Loading project information...
+        </div>
+
+        <div class="quick-actions" id="quickActions">
+            <button class="action-btn btn-primary" onclick="startAll()">Run All Services</button>
+            <button class="action-btn btn-secondary" onclick="buildAll()">Build All</button>
+            <button class="action-btn btn-danger" onclick="stopAll()">Stop All Services</button>
+            <button class="action-btn btn-secondary" onclick="refreshStatus()">Refresh Status</button>
+        </div>
+
+        <div class="status-section">
+            <div class="status-card">
+                <div class="status-card-title">PROJECT TASK STATUS</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progressLabel">Loading...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="task-list">
+                    <div class="task-item">
+                        <span class="task-badge task-done">OK</span>
+                        <span id="tasksDone">0 Completed</span>
+                    </div>
+                    <div class="task-item">
+                        <span class="task-badge task-pending">WAIT</span>
+                        <span id="tasksRemaining">0 Remaining</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div class="status-card-title">TESTING & DOCS</div>
+                    <button class="doc-link" onclick="showClaudeCodeSyntax()" style="font-size: 11px; padding: 6px 10px; margin: 0;">
+                        Code Syntax
+                    </button>
+                </div>
+                <div style="display: grid; gap: 10px;">
+                    <button class="doc-link" onclick="openDocsBrowser()" style="margin: 0; width: 100%; text-align: left; background: rgba(74, 208, 225, 0.2); border: 1px solid rgba(74, 208, 225, 0.3); font-weight: 600; color: #4dd0e1;">
+                        📚 Browse All Docs
+                    </button>
+                    <button class="doc-link" onclick="openTestingChecklist()" style="margin: 0; width: 100%; text-align: left;">
+                        🧪 Testing Checklist (Auto-Load)
+                    </button>
+                    <button class="doc-link" onclick="openDoc('openspec')" style="margin: 0; width: 100%; text-align: left;">
+                        Task Status (OPENSPEC)
+                    </button>
+                    <button class="doc-link" onclick="openDoc('architecture')" style="margin: 0; width: 100%; text-align: left;">
+                        Architecture (CLAUDE.md)
+                    </button>
+                    <button class="doc-link" onclick="openDoc('design')" style="margin: 0; width: 100%; text-align: left;">
+                        Design System
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="credentials-section" id="credentialsSection">
+            <!-- Credentials will be generated here -->
+        </div>
+
+        <div class="services-grid" id="servicesGrid">
+            <!-- Service cards will be generated here -->
+        </div>
+
+        <div class="logs-section">
+            <div class="logs-title">Development Log</div>
+            <div class="logs-container" id="logsContainer">
+                <div class="log-entry log-info">Waiting for logs...</div>
+            </div>
+        </div>
+
+        <!-- Documentation Browser Modal -->
+        <div id="docsBrowserModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(4px); overflow-y: auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 100%); border: 1px solid rgba(0, 200, 200, 0.3); border-radius: 12px; max-width: 1000px; width: 95%; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="padding: 20px; border-bottom: 1px solid rgba(0, 200, 200, 0.2); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 18px; font-weight: 700; color: #4dd0e1;">📚 NexusTravel Documentation Browser</div>
+                    <button onclick="closeDocsBrowser()" style="background: transparent; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">✕</button>
+                </div>
+                <div style="display: flex; flex: 1; overflow: hidden;">
+                    <!-- File tree -->
+                    <div id="docsFileTree" style="width: 280px; border-right: 1px solid rgba(0, 200, 200, 0.2); overflow-y: auto; padding: 15px; background: rgba(0, 0, 0, 0.3);">
+                        <div style="text-align: center; padding: 20px; color: #4dd0e1;">Loading documentation structure...</div>
+                    </div>
+                    <!-- File viewer -->
+                    <div id="docsFileViewer" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                        <div style="padding: 15px; border-bottom: 1px solid rgba(0, 200, 200, 0.2); background: rgba(0, 0, 0, 0.2);">
+                            <div style="font-size: 12px; color: #60a5fa; font-weight: 600;">File:</div>
+                            <div id="docsFileName" style="color: #4dd0e1; font-size: 14px; font-weight: 600; word-break: break-all;">Select a file to view</div>
+                        </div>
+                        <div id="docsFileContent" style="flex: 1; overflow-y: auto; padding: 20px; color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                            <div style="text-align: center; padding: 40px; color: #60a5fa;">📖 Select a file from the left to view its contents</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Checklist Modal (Auto-Loading) -->
+        <div id="testingChecklistModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(4px); overflow-y: auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 100%); border: 1px solid rgba(0, 200, 200, 0.3); border-radius: 12px; padding: 30px; max-width: 900px; width: 95%; min-height: auto; max-height: 90vh; overflow-y: auto;">
+                <div style="font-size: 20px; font-weight: 700; color: #4dd0e1; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    🧪 Testing Checklist (Auto-Loading from Markdown)
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button onclick="refreshTestingChecklist()" style="background: rgba(74, 208, 225, 0.2); border: 1px solid rgba(74, 208, 225, 0.4); color: #4dd0e1; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600;">🔄 Refresh</button>
+                        <button onclick="clearTestProgress()" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600;">🗑️ Clear</button>
+                        <button onclick="closeTestingChecklist()" style="background: transparent; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">✕</button>
+                    </div>
+                </div>
+                <div style="background: rgba(0, 200, 200, 0.1); border: 1px solid rgba(0, 200, 200, 0.2); padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 13px; color: #cbd5e1;">
+                    <strong>✨ Live Loading:</strong> This checklist automatically loads from <code style="color: #4dd0e1;">docs/testing/TESTING_CHECKLIST_WITH_CREDENTIALS.md</code>. No restart needed when you update the markdown file!
+                </div>
+                <div id="testingChecklistContent" style="color: #cbd5e1;">
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 14px; color: #4dd0e1;">Loading checklist from markdown...</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(0, 200, 200, 0.2); display: flex; gap: 10px; justify-content: flex-end;">
+                    <button onclick="saveTestReport()" style="background: rgba(74, 208, 225, 0.3); border: 1px solid rgba(74, 208, 225, 0.5); color: #4dd0e1; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px;">💾 Save Report</button>
+                    <button onclick="closeTestingChecklist()" style="background: rgba(0, 200, 0, 0.2); border: 1px solid rgba(0, 200, 0, 0.3); color: #4ade80; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px;">Done</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Claude Code Syntax Modal -->
+        <div class="syntax-modal" id="syntaxModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 100%); border: 1px solid rgba(0, 200, 200, 0.3); border-radius: 12px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                <div style="font-size: 18px; font-weight: 700; color: #4dd0e1; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    Code Syntax Helper
+                    <button onclick="closeSyntaxModal()" style="background: transparent; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">X</button>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 600; color: #60a5fa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Read Testing Checklist</div>
+                    <div style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 200, 200, 0.2); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 12px; color: #4dd0e1; margin-bottom: 10px; line-height: 1.6; word-break: break-all;">read "C:\Nexus Systems\NexusTravel\TESTING-CHECKLIST.md"</div>
+                    <button onclick="copySyntax('read \"C:\\Nexus Systems\\NexusTravel\\TESTING-CHECKLIST.md\"')" style="padding: 6px 12px; background: rgba(0, 200, 200, 0.2); border: 1px solid rgba(0, 200, 200, 0.3); border-radius: 4px; color: #4dd0e1; font-size: 11px; cursor: pointer; transition: all 0.2s; font-weight: 600;">Copy</button>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: 600; color: #60a5fa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Read Architecture</div>
+                    <div style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 200, 200, 0.2); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 12px; color: #4dd0e1; margin-bottom: 10px; line-height: 1.6; word-break: break-all;">read "C:\Nexus Systems\NexusTravel\CLAUDE.md"</div>
+                    <button onclick="copySyntax('read \"C:\\Nexus Systems\\NexusTravel\\CLAUDE.md\"')" style="padding: 6px 12px; background: rgba(0, 200, 200, 0.2); border: 1px solid rgba(0, 200, 200, 0.3); border-radius: 4px; color: #4dd0e1; font-size: 11px; cursor: pointer; transition: all 0.2s; font-weight: 600;">Copy</button>
+                </div>
+
+                <div style="background: rgba(0, 200, 0, 0.05); border: 1px solid rgba(0, 200, 0, 0.2); padding: 12px; border-radius: 6px; margin-top: 15px;">
+                    <div style="font-size: 11px; color: #4ade80; font-weight: 600; margin-bottom: 5px;">Usage:</div>
+                    <div style="font-size: 11px; color: #cbd5e1;">Paste commands into Claude Code chat to read files. Claude will analyze and help.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let services = {};
+        let allLogs = {};
+        let projects = {};
+        let activeProject = 'nexustravel';
+
+        async function init() {
+            await loadProjects();
+            await loadConfig();
+            loadTaskStatus();
+            setInterval(updateStatus, 2000);
+            setInterval(loadTaskStatus, 5000);
+            updateStatus();
+        }
+
+        async function loadTaskStatus() {
+            try {
+                if (activeProject === 'nexustravel') {
+                    const response = await fetch(`${API_BASE}/docs/openspec`);
+                    const data = await response.json();
+
+                    if (data.content) {
+                        const text = data.content;
+                        const totalMatch = text.match(/- \*\*Total Tasks:\*\* (\d+)/);
+                        const completedMatch = text.match(/- \*\*Completed:\*\* (\d+)/);
+                        const remainingMatch = text.match(/- \*\*Remaining:\*\* (\d+)/);
+
+                        if (totalMatch && completedMatch && remainingMatch) {
+                            const total = parseInt(totalMatch[1]);
+                            const completed = parseInt(completedMatch[1]);
+                            const remaining = parseInt(remainingMatch[1]);
+                            const percentage = Math.round((completed / total) * 100);
+
+                            document.getElementById('progressFill').style.width = percentage + '%';
+                            document.getElementById('progressPercent').textContent = percentage + '%';
+                            document.getElementById('progressLabel').textContent = `${completed}/${total} Tasks`;
+                            document.getElementById('tasksDone').textContent = `OK ${completed} Completed`;
+                            document.getElementById('tasksRemaining').textContent = `WAIT ${remaining} Remaining`;
+                        }
+                    }
+                } else {
+                    document.getElementById('progressFill').style.width = '0%';
+                    document.getElementById('progressPercent').textContent = '0%';
+                    document.getElementById('progressLabel').textContent = 'No tasks tracked';
+                    document.getElementById('tasksDone').textContent = `OK 0 Completed`;
+                    document.getElementById('tasksRemaining').textContent = `WAIT 0 Remaining`;
+                }
+            } catch (error) {
+                console.log('Task status unavailable:', error);
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await fetch(`${API_BASE}/projects`);
+                const data = await response.json();
+                projects = data.projects;
+                activeProject = data.activeProject;
+                renderProjectNav();
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+            }
+        }
+
+        function renderProjectNav() {
+            const nav = document.getElementById('projectNav');
+            nav.innerHTML = '';
+            Object.entries(projects).forEach(([key, project]) => {
+                const btn = document.createElement('button');
+                btn.className = `project-btn ${key === activeProject ? 'active' : ''}`;
+                btn.textContent = project.name;
+                btn.onclick = () => switchProject(key);
+                nav.appendChild(btn);
+            });
+        }
+
+        async function switchProject(projectKey) {
+            try {
+                const response = await fetch(`${API_BASE}/projects/${projectKey}`, { method: 'POST' });
+                const result = await response.json();
+                if (result.success) {
+                    activeProject = projectKey;
+                    await loadConfig();
+                    loadTaskStatus();
+                    renderProjectNav();
+                    addLog('system', `Switched to project: ${projects[projectKey].name}`, 'warning');
+                }
+            } catch (error) {
+                console.error('Failed to switch project:', error);
+            }
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/config`);
+                const config = await response.json();
+                services = config.services;
+                updateProjectInfo(config);
+                renderServiceCards();
+                renderCredentials();
+                Object.keys(services).forEach(key => {
+                    allLogs[key] = [];
+                });
+            } catch (error) {
+                console.error('Failed to load config:', error);
+            }
+        }
+
+        function updateProjectInfo(config) {
+            const info = document.getElementById('projectInfo');
+            info.innerHTML = `<strong>Project:</strong> ${config.project} | <strong>Description:</strong> ${config.description}`;
+        }
+
+        function renderServiceCards() {
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = '';
+
+            Object.entries(services).forEach(([key, service]) => {
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                card.innerHTML = `
+                    <div class="service-header">
+                        <div class="service-title">${service.name}</div>
+                        <span class="status-badge status-stopped" id="status-${key}">Stopped</span>
+                    </div>
+                    <div class="service-description">${service.description}</div>
+                    <div class="service-info">
+                        <div class="info-item">Port: <a class="port-link" onclick="window.open('${service.url}', '_blank')">${service.port}</a></div>
+                        <div class="info-item"><a class="port-link" onclick="window.open('${service.url}', '_blank')">${service.url}</a></div>
+                    </div>
+                    <div class="service-controls">
+                        <button class="control-btn build" onclick="buildService('${key}')">Build</button>
+                        <button class="control-btn start" onclick="startService('${key}')">Run</button>
+                        <button class="control-btn stop" onclick="stopService('${key}')">Stop</button>
+                    </div>
+                    <div class="quick-links">
+                        <button class="quick-link" onclick="window.open('${service.url}', '_blank')">Open</button>
+                        ${service.swagger ? `<button class="quick-link" onclick="window.open('${service.swagger}', '_blank')">Swagger</button>` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderCredentials() {
+            const section = document.getElementById('credentialsSection');
+
+            if (activeProject === 'nexustravel') {
+                section.innerHTML = `
+                    <div class="credentials-title">Admin Portal Login Credentials</div>
+
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 10px; font-weight: 600;">Super Admin</div>
+                        <div class="credential-item">
+                            <span class="credential-label">Email:</span>
+                            <span class="credential-value">superadmin@nexustravel.com</span>
+                            <button class="copy-btn" onclick="copyToClipboard('superadmin@nexustravel.com')">Copy</button>
+                        </div>
+                        <div class="credential-item">
+                            <span class="credential-label">Password:</span>
+                            <span class="credential-value">SuperAdmin@123</span>
+                            <button class="copy-btn" onclick="copyToClipboard('SuperAdmin@123')">Copy</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 10px; font-weight: 600;">Admin</div>
+                        <div class="credential-item">
+                            <span class="credential-label">Email:</span>
+                            <span class="credential-value">admin@nexustravel.com</span>
+                            <button class="copy-btn" onclick="copyToClipboard('admin@nexustravel.com')">Copy</button>
+                        </div>
+                        <div class="credential-item">
+                            <span class="credential-label">Password:</span>
+                            <span class="credential-value">Admin@123</span>
+                            <button class="copy-btn" onclick="copyToClipboard('Admin@123')">Copy</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                section.innerHTML = `<div class="credentials-title">Credentials</div><p style="color: #94a3b8; font-size: 13px;">Credentials configuration coming soon for ${projects[activeProject]?.name}</p>`;
+            }
+        }
+
+        async function updateStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/services`);
+                const status = await response.json();
+
+                Object.entries(status).forEach(([key, svc]) => {
+                    const statusBadge = document.getElementById(`status-${key}`);
+                    if (statusBadge) {
+                        if (svc.running) {
+                            statusBadge.textContent = 'Running';
+                            statusBadge.className = 'status-badge status-running';
+                        } else {
+                            statusBadge.textContent = 'Stopped';
+                            statusBadge.className = 'status-badge status-stopped';
+                        }
+                    }
+
+                    if (svc.logs && svc.logs.length > 0) {
+                        allLogs[key] = svc.logs;
+                    }
+                });
+
+                updateLogsDisplay();
+            } catch (error) {
+                console.error('Failed to update status:', error);
+            }
+        }
+
+        function updateLogsDisplay() {
+            const logsContainer = document.getElementById('logsContainer');
+            let html = '';
+
+            const allEntries = [];
+            Object.entries(allLogs).forEach(([service, logs]) => {
+                logs.forEach(log => {
+                    allEntries.push({ service, ...log });
+                });
+            });
+
+            allEntries.slice(-50).forEach(entry => {
+                const className = `log-entry log-${entry.type}`;
+                html += `<div class="${className}"><strong>[${entry.service}]</strong> ${entry.message}</div>`;
+            });
+
+            logsContainer.innerHTML = html || '<div class="log-entry log-info">No logs yet...</div>';
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        async function startService(service) {
+            try {
+                fetch(`${API_BASE}/start/${service}`, { method: 'POST' });
+                addLog(service, `Starting service...`, 'warning');
+            } catch (error) {
+                addLog(service, `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function stopService(service) {
+            try {
+                const response = await fetch(`${API_BASE}/stop/${service}`, { method: 'POST' });
+                const result = await response.json();
+
+                if (result.success) {
+                    addLog(service, `Stopping service...`, 'warning');
+                    setTimeout(() => {
+                        updateStatus();
+                    }, 1000);
+                }
+            } catch (error) {
+                addLog(service, `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function buildService(service) {
+            try {
+                fetch(`${API_BASE}/build/${service}`, { method: 'POST' });
+                addLog(service, `Building service...`, 'warning');
+            } catch (error) {
+                addLog(service, `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function startAll() {
+            try {
+                await fetch(`${API_BASE}/start-all`, { method: 'POST' });
+                addLog('system', 'Starting all services...', 'warning');
+            } catch (error) {
+                addLog('system', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function stopAll() {
+            try {
+                addLog('system', 'Sending stop signal to all services...', 'warning');
+                const response = await fetch(`${API_BASE}/stop-all`, { method: 'POST' });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                addLog('system', result.message || 'Stopping all services...', 'warning');
+
+                setTimeout(() => {
+                    updateStatus();
+                }, 2000);
+            } catch (error) {
+                addLog('system', `Error stopping services: ${error.message}`, 'error');
+            }
+        }
+
+        async function buildAll() {
+            try {
+                Object.keys(services).forEach(service => {
+                    buildService(service);
+                });
+            } catch (error) {
+                addLog('system', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        function refreshStatus() {
+            updateStatus();
+        }
+
+        function addLog(service, message, type = 'info') {
+            if (!allLogs[service]) {
+                allLogs[service] = [];
+            }
+            const timestamp = new Date().toLocaleTimeString();
+            allLogs[service].push({
+                message: `[${timestamp}] ${message}`,
+                type
+            });
+            updateLogsDisplay();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                alert('Copied: ' + text);
+            });
+        }
+
+        async function openDoc(doctype) {
+            try {
+                const response = await fetch(`${API_BASE}/docs/${doctype}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Document not found`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                if (data.content) {
+                    const docWindow = window.open('', '_blank', 'width=1000,height=700');
+                    docWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>${data.filename}</title>
+                            <style>
+                                body {
+                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                                    line-height: 1.6;
+                                    color: #333;
+                                    max-width: 1000px;
+                                    margin: 0 auto;
+                                    padding: 30px;
+                                    background: #f5f5f5;
+                                }
+                                h1 { color: #0066cc; }
+                                h2 { color: #00a89a; margin-top: 30px; }
+                                h3 { color: #006699; }
+                                code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+                                pre { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; overflow-x: auto; }
+                                table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+                                th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                                th { background: #f0f0f0; }
+                            </style>
+                        </head>
+                        <body>
+                            ${markdownToHtml(data.content)}
+                        </body>
+                        </html>
+                    `);
+                    docWindow.document.close();
+                }
+            } catch (error) {
+                alert('Error: ' + error.message + '\n\nMake sure DevHub is running');
+            }
+        }
+
+        function markdownToHtml(markdown) {
+            let html = markdown
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/```(.*?)```/gim, '<pre>$1</pre>')
+                .replace(/`(.*?)`/gim, '<code>$1</code>')
+                .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
+                .replace(/\n\n/gim, '</p><p>')
+                .replace(/\n/gim, '<br>');
+
+            return '<p>' + html + '</p>';
+        }
+
+        function showClaudeCodeSyntax() {
+            document.getElementById('syntaxModal').style.display = 'flex';
+        }
+
+        function closeSyntaxModal() {
+            document.getElementById('syntaxModal').style.display = 'none';
+        }
+
+        function copySyntax(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                alert('Please copy manually:\n\n' + text);
+            });
+        }
+
+        // ===== TESTING CHECKLIST AUTO-LOAD FUNCTIONS =====
+
+        async function openTestingChecklist() {
+            document.getElementById('testingChecklistModal').style.display = 'flex';
+            await refreshTestingChecklist();
+        }
+
+        function closeTestingChecklist() {
+            document.getElementById('testingChecklistModal').style.display = 'none';
+        }
+
+        async function refreshTestingChecklist() {
+            try {
+                const response = await fetch(`${API_BASE}/testing-checklist`);
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('testingChecklistContent').innerHTML = `
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 20px; border-radius: 6px; color: #fca5a5;">
+                            <strong>⚠️ Error loading checklist:</strong> ${data.error}<br>
+                            <small>Make sure the checklist file exists at: C:\\Nexus Systems\\NexusTravel\\docs\\testing\\TESTING_CHECKLIST_WITH_CREDENTIALS.md</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                renderTestingChecklist(data.modules);
+            } catch (error) {
+                document.getElementById('testingChecklistContent').innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 20px; border-radius: 6px; color: #fca5a5;">
+                        <strong>❌ Failed to load checklist:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function renderTestingChecklist(modules) {
+            const container = document.getElementById('testingChecklistContent');
+            container.innerHTML = '';
+
+            const savedProgress = JSON.parse(localStorage.getItem('testingProgress') || '{}');
+            let totalTests = 0;
+            let completedTests = 0;
+
+            modules.forEach((module, moduleIdx) => {
+                const moduleKey = `module-${moduleIdx}`;
+                const isExpanded = localStorage.getItem(`${moduleKey}-expanded`) !== 'false';
+
+                const moduleDiv = document.createElement('div');
+                moduleDiv.style.cssText = 'background: rgba(0, 200, 200, 0.05); border: 1px solid rgba(0, 200, 200, 0.2); border-radius: 6px; margin-bottom: 15px; padding: 15px;';
+
+                const moduleHeader = document.createElement('div');
+                moduleHeader.style.cssText = 'display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; padding: 10px; background: rgba(0, 200, 200, 0.1); border-radius: 4px; margin: -15px -15px 15px -15px; padding: 15px;';
+                moduleHeader.onclick = () => {
+                    const content = moduleDiv.querySelector('[data-module-content]');
+                    const isExpanded = content.style.display !== 'none';
+                    content.style.display = isExpanded ? 'none' : 'block';
+                    localStorage.setItem(`${moduleKey}-expanded`, isExpanded ? 'false' : 'true');
+                    moduleDiv.querySelector('[data-toggle-arrow]').textContent = isExpanded ? '▶' : '▼';
+                };
+
+                const headerText = document.createElement('div');
+                headerText.innerHTML = `<strong style="color: #4dd0e1; font-size: 14px;">${module.title}</strong>`;
+
+                const arrow = document.createElement('div');
+                arrow.setAttribute('data-toggle-arrow', '');
+                arrow.style.cssText = 'color: #4dd0e1; font-size: 12px; font-weight: bold;';
+                arrow.textContent = isExpanded ? '▼' : '▶';
+
+                moduleHeader.appendChild(headerText);
+                moduleHeader.appendChild(arrow);
+                moduleDiv.appendChild(moduleHeader);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.setAttribute('data-module-content', '');
+                contentDiv.style.cssText = `display: ${isExpanded ? 'block' : 'none'};`;
+
+                module.tests.forEach(test => {
+                    const testKey = `test-${moduleIdx}-${test.id}`;
+                    const isCompleted = savedProgress[testKey]?.completed || false;
+                    const notes = savedProgress[testKey]?.notes || '';
+
+                    totalTests++;
+                    if (isCompleted) completedTests++;
+
+                    const testDiv = document.createElement('div');
+                    testDiv.style.cssText = 'margin-bottom: 15px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; border-left: 3px solid ' + (isCompleted ? '#4ade80' : '#60a5fa') + ';';
+
+                    const testHeader = document.createElement('div');
+                    testHeader.style.cssText = 'display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = isCompleted;
+                    checkbox.style.cssText = 'margin-top: 4px; cursor: pointer;';
+                    checkbox.onchange = () => {
+                        saveTestProgress(testKey, checkbox.checked, notes);
+                        testDiv.style.borderLeftColor = checkbox.checked ? '#4ade80' : '#60a5fa';
+                        testDiv.style.background = checkbox.checked ? 'rgba(74, 222, 128, 0.05)' : 'rgba(0, 0, 0, 0.3)';
+                        updateChecklistProgress();
+                    };
+
+                    const titleDiv = document.createElement('div');
+                    titleDiv.style.cssText = 'flex: 1; color: ' + (isCompleted ? '#cbd5e1' : '#4dd0e1') + '; text-decoration: ' + (isCompleted ? 'line-through' : 'none') + ';';
+                    titleDiv.textContent = test.title;
+
+                    testHeader.appendChild(checkbox);
+                    testHeader.appendChild(titleDiv);
+                    testDiv.appendChild(testHeader);
+
+                    // Test steps
+                    if (test.steps && test.steps.length > 0) {
+                        const stepsDiv = document.createElement('div');
+                        stepsDiv.style.cssText = 'margin-left: 30px; margin-bottom: 10px; font-size: 12px; color: #94a3b8; line-height: 1.6;';
+                        stepsDiv.innerHTML = test.steps.map(step => `• ${step}`).join('<br>');
+                        testDiv.appendChild(stepsDiv);
+                    }
+
+                    // Notes textarea
+                    const notesDiv = document.createElement('div');
+                    notesDiv.style.cssText = 'margin-top: 10px;';
+                    const notesLabel = document.createElement('label');
+                    notesLabel.style.cssText = 'display: block; font-size: 11px; color: #60a5fa; margin-bottom: 5px; font-weight: 600;';
+                    notesLabel.textContent = 'Notes:';
+                    const notesArea = document.createElement('textarea');
+                    notesArea.placeholder = 'Add notes for this test...';
+                    notesArea.value = notes;
+                    notesArea.style.cssText = 'width: 100%; height: 60px; padding: 8px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 200, 200, 0.2); border-radius: 4px; color: #cbd5e1; font-family: monospace; font-size: 12px; resize: vertical;';
+                    notesArea.onchange = () => {
+                        saveTestProgress(testKey, isCompleted, notesArea.value);
+                    };
+                    notesDiv.appendChild(notesLabel);
+                    notesDiv.appendChild(notesArea);
+                    testDiv.appendChild(notesDiv);
+
+                    contentDiv.appendChild(testDiv);
+                });
+
+                moduleDiv.appendChild(contentDiv);
+                container.appendChild(moduleDiv);
+            });
+
+            // Add summary
+            const summaryDiv = document.createElement('div');
+            summaryDiv.style.cssText = 'background: rgba(74, 208, 225, 0.1); border: 1px solid rgba(74, 208, 225, 0.3); padding: 15px; border-radius: 6px; margin-top: 20px;';
+            const percentage = totalTests > 0 ? Math.round((completedTests / totalTests) * 100) : 0;
+            summaryDiv.innerHTML = `
+                <div style="font-size: 13px; color: #4dd0e1; margin-bottom: 10px;"><strong>Testing Progress:</strong></div>
+                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 4px; height: 20px; overflow: hidden; margin-bottom: 10px;">
+                    <div style="background: linear-gradient(90deg, #4ade80, #22c55e); height: 100%; width: ${percentage}%; transition: width 0.3s;"></div>
+                </div>
+                <div style="color: #cbd5e1; font-size: 12px;">✅ ${completedTests}/${totalTests} tests completed (${percentage}%)</div>
+            `;
+            container.appendChild(summaryDiv);
+        }
+
+        function saveTestProgress(testKey, completed, notes) {
+            const progress = JSON.parse(localStorage.getItem('testingProgress') || '{}');
+            progress[testKey] = { completed, notes };
+            localStorage.setItem('testingProgress', JSON.stringify(progress));
+        }
+
+        function updateChecklistProgress() {
+            const progress = JSON.parse(localStorage.getItem('testingProgress') || '{}');
+            const completed = Object.values(progress).filter(p => p.completed).length;
+            const total = Object.keys(progress).length;
+            if (total > 0) {
+                const percentage = Math.round((completed / total) * 100);
+                const summaryDiv = document.querySelector('[style*="Testing Progress"]')?.parentElement;
+                if (summaryDiv) {
+                    summaryDiv.innerHTML = `
+                        <div style="font-size: 13px; color: #4dd0e1; margin-bottom: 10px;"><strong>Testing Progress:</strong></div>
+                        <div style="background: rgba(0, 0, 0, 0.3); border-radius: 4px; height: 20px; overflow: hidden; margin-bottom: 10px;">
+                            <div style="background: linear-gradient(90deg, #4ade80, #22c55e); height: 100%; width: ${percentage}%; transition: width 0.3s;"></div>
+                        </div>
+                        <div style="color: #cbd5e1; font-size: 12px;">✅ ${completed}/${total} tests completed (${percentage}%)</div>
+                    `;
+                }
+            }
+        }
+
+        function saveTestReport() {
+            const progress = JSON.parse(localStorage.getItem('testingProgress') || '{}');
+            const report = generateTestReport(progress);
+            const dataStr = JSON.stringify(report, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `test-report-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            alert('✅ Test report saved! File: ' + link.download);
+        }
+
+        function generateTestReport(progress) {
+            const completed = Object.values(progress).filter(p => p.completed).length;
+            const total = Object.keys(progress).length;
+            return {
+                timestamp: new Date().toISOString(),
+                summary: {
+                    totalTests: total,
+                    completed: completed,
+                    percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+                },
+                details: progress
+            };
+        }
+
+        function clearTestProgress() {
+            if (confirm('🗑️ Clear all test progress? This cannot be undone.')) {
+                localStorage.removeItem('testingProgress');
+                document.getElementById('testingChecklistContent').innerHTML = '<div style="padding: 20px; text-align: center; color: #4ade80;">✅ Test progress cleared! Reloading...</div>';
+                setTimeout(() => refreshTestingChecklist(), 500);
+            }
+        }
+
+        // ===== DOCUMENTATION BROWSER FUNCTIONS =====
+
+        async function openDocsBrowser() {
+            document.getElementById('docsBrowserModal').style.display = 'flex';
+            await loadDocsBrowser();
+        }
+
+        function closeDocsBrowser() {
+            document.getElementById('docsBrowserModal').style.display = 'none';
+        }
+
+        async function loadDocsBrowser() {
+            try {
+                const response = await fetch(`${API_BASE}/docs/browse`);
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('docsFileTree').innerHTML = `
+                        <div style="color: #fca5a5; padding: 10px; font-size: 12px;">
+                            ⚠️ Error: ${data.error}
+                        </div>
+                    `;
+                    return;
+                }
+
+                renderDocsTree(data.items);
+            } catch (error) {
+                document.getElementById('docsFileTree').innerHTML = `
+                    <div style="color: #fca5a5; padding: 10px; font-size: 12px;">
+                        ❌ Failed to load docs: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function renderDocsTree(items, parentElement = null) {
+            const container = parentElement || document.getElementById('docsFileTree');
+            if (!parentElement) {
+                container.innerHTML = '';
+            }
+
+            items.forEach(item => {
+                if (item.type === 'folder') {
+                    const folderDiv = document.createElement('div');
+                    folderDiv.style.cssText = 'margin-bottom: 5px;';
+
+                    const folderHeader = document.createElement('div');
+                    folderHeader.style.cssText = 'cursor: pointer; padding: 6px; border-radius: 4px; user-select: none; display: flex; align-items: center; gap: 6px; color: #4dd0e1; font-size: 12px; font-weight: 600; hover: background rgba(0, 200, 200, 0.1);';
+                    folderHeader.onmouseover = () => folderHeader.style.background = 'rgba(0, 200, 200, 0.1)';
+                    folderHeader.onmouseout = () => folderHeader.style.background = 'transparent';
+
+                    const arrow = document.createElement('span');
+                    arrow.textContent = '▶';
+                    arrow.style.cssText = 'display: inline-block; width: 12px; transition: transform 0.2s;';
+
+                    const folderName = document.createElement('span');
+                    folderName.textContent = '📁 ' + item.name;
+
+                    folderHeader.appendChild(arrow);
+                    folderHeader.appendChild(folderName);
+
+                    const subItemsDiv = document.createElement('div');
+                    subItemsDiv.style.cssText = 'display: none; margin-left: 15px; border-left: 1px solid rgba(0, 200, 200, 0.2); padding-left: 10px;';
+
+                    folderHeader.onclick = () => {
+                        const isExpanded = subItemsDiv.style.display !== 'none';
+                        subItemsDiv.style.display = isExpanded ? 'none' : 'block';
+                        arrow.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(90deg)';
+                    };
+
+                    folderDiv.appendChild(folderHeader);
+                    folderDiv.appendChild(subItemsDiv);
+                    container.appendChild(folderDiv);
+
+                    renderDocsTree(item.items, subItemsDiv);
+                } else if (item.type === 'file') {
+                    const fileDiv = document.createElement('div');
+                    fileDiv.style.cssText = 'padding: 6px 8px; margin: 3px 0; border-radius: 4px; cursor: pointer; font-size: 12px; color: #cbd5e1; user-select: none; transition: all 0.2s;';
+                    fileDiv.onmouseover = () => {
+                        fileDiv.style.background = 'rgba(0, 200, 200, 0.15)';
+                        fileDiv.style.color = '#4dd0e1';
+                    };
+                    fileDiv.onmouseout = () => {
+                        fileDiv.style.background = 'transparent';
+                        fileDiv.style.color = '#cbd5e1';
+                    };
+
+                    fileDiv.textContent = '📄 ' + item.name;
+                    fileDiv.onclick = () => viewDocsFile(item.path, item.name);
+                    container.appendChild(fileDiv);
+                }
+            });
+        }
+
+        async function viewDocsFile(filePath, fileName) {
+            try {
+                document.getElementById('docsFileName').textContent = filePath;
+                document.getElementById('docsFileContent').innerHTML = '<div style="text-align: center; color: #4dd0e1;">Loading file...</div>';
+
+                const response = await fetch(`${API_BASE}/docs/file?path=${encodeURIComponent(filePath)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('docsFileContent').innerHTML = `
+                        <div style="color: #fca5a5;">
+                            <strong>Error:</strong> ${data.error}
+                        </div>
+                    `;
+                    return;
+                }
+
+                const htmlContent = markdownToHtml(data.content);
+                document.getElementById('docsFileContent').innerHTML = htmlContent;
+            } catch (error) {
+                document.getElementById('docsFileContent').innerHTML = `
+                    <div style="color: #fca5a5;">
+                        <strong>Error loading file:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function markdownToHtml(markdown) {
+            let html = markdown
+                // Code blocks
+                .replace(/```[\s\S]*?```/gm, (match) => {
+                    const code = match.replace(/```/g, '').trim();
+                    return `<div style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 200, 200, 0.2); padding: 12px; border-radius: 4px; margin: 12px 0; overflow-x: auto;"><pre style="margin: 0; color: #4dd0e1; font-family: monospace; font-size: 11px; line-height: 1.5;">${escapeHtml(code)}</pre></div>`;
+                })
+                // Headers
+                .replace(/^### (.*?)$/gm, '<div style="font-size: 14px; font-weight: 700; color: #4dd0e1; margin: 16px 0 8px 0;">$1</div>')
+                .replace(/^## (.*?)$/gm, '<div style="font-size: 16px; font-weight: 700; color: #4dd0e1; margin: 20px 0 12px 0;">$1</div>')
+                .replace(/^# (.*?)$/gm, '<div style="font-size: 18px; font-weight: 700; color: #4dd0e1; margin: 24px 0 16px 0;">$1</div>')
+                // Bold and italic
+                .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #4dd0e1;">$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/__(.*?)__/g, '<strong style="color: #4dd0e1;">$1</strong>')
+                .replace(/_(.*?)_/g, '<em>$1</em>')
+                // Inline code
+                .replace(/`([^`]+)`/g, '<code style="background: rgba(0, 200, 200, 0.1); color: #4dd0e1; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 12px;">$1</code>')
+                // Links
+                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" style="color: #4dd0e1; text-decoration: underline; cursor: pointer;" onclick="window.open(\'$2\', \'_blank\'); return false;">$1</a>')
+                // Line breaks and paragraphs
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+
+            return '<p>' + html + '</p>';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        init();
+    </script>
+</body>
+</html>
