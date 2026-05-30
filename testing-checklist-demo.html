@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Checklist Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 100%);
+            color: #e2e8f0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(74, 208, 225, 0.3);
+        }
+
+        h1 {
+            color: #4dd0e1;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0, 200, 200, 0.1);
+            border: 1px solid rgba(0, 200, 200, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4ade80;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .progress-section {
+            margin: 30px 0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(74, 208, 225, 0.3);
+        }
+
+        .progress-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            height: 30px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .modules-section {
+            margin: 30px 0;
+        }
+
+        .module {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(74, 208, 225, 0.2);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .module-header {
+            background: rgba(0, 102, 204, 0.2);
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .module-header:hover {
+            background: rgba(0, 102, 204, 0.3);
+        }
+
+        .module-title {
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        .module-count {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .module-content {
+            display: none;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        .test-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .test-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .test-info {
+            flex: 1;
+        }
+
+        .test-title {
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .test-notes {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 208, 225, 0.2);
+            border-radius: 4px;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-family: monospace;
+            resize: vertical;
+            min-height: 40px;
+            margin-top: 8px;
+        }
+
+        .test-item.completed .test-title {
+            color: #4ade80;
+            text-decoration: line-through;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0052a3;
+        }
+
+        button.secondary {
+            background: rgba(74, 208, 225, 0.2);
+            color: #4dd0e1;
+            border: 1px solid rgba(74, 208, 225, 0.3);
+        }
+
+        button.secondary:hover {
+            background: rgba(74, 208, 225, 0.3);
+        }
+
+        button.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        button.danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: rgba(74, 208, 225, 0.2);
+            border: 1px solid rgba(74, 208, 225, 0.3);
+            padding: 15px;
+            border-radius: 6px;
+            color: #4dd0e1;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧪 Testing Checklist - Interactive Demo</h1>
+            <p class="subtitle">Click tests to mark complete, add notes, and generate reports</p>
+        </header>
+
+        <div class="success-message" id="successMsg"></div>
+
+        <div class="progress-section">
+            <div style="font-weight: 600; color: #4dd0e1; margin-bottom: 10px;">
+                Testing Progress
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px; color: #cbd5e1; margin-top: 10px;">
+                <div>✅ Completed: <span id="completedCount">0</span></div>
+                <div>📋 Total: <span id="totalCount">0</span></div>
+                <div>⏳ Remaining: <span id="remainingCount">0</span></div>
+            </div>
+        </div>
+
+        <div class="modules-section" id="modulesContainer"></div>
+
+        <div class="actions">
+            <button onclick="completeRandomTests()">✅ Complete 10 Random Tests</button>
+            <button class="secondary" onclick="generateReport()">📊 Generate Report</button>
+            <button class="secondary" onclick="downloadReport()">💾 Download Report</button>
+            <button class="danger" onclick="clearProgress()">🗑️ Clear Progress</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let allTests = [];
+        let testProgress = JSON.parse(localStorage.getItem('testingProgress') || '{}');
+
+        async function loadChecklist() {
+            try {
+                const response = await fetch(`${API_BASE}/testing-checklist`);
+                const data = await response.json();
+
+                // Flatten all tests
+                data.modules.forEach(module => {
+                    module.tests.forEach(test => {
+                        allTests.push({
+                            id: test.id,
+                            title: test.title,
+                            module: module.title,
+                            steps: test.steps
+                        });
+                    });
+                });
+
+                renderModules(data.modules);
+                updateProgress();
+            } catch (error) {
+                console.error('Failed to load checklist:', error);
+                showMessage('❌ Failed to load testing checklist', 'error');
+            }
+        }
+
+        function renderModules(modules) {
+            const container = document.getElementById('modulesContainer');
+            container.innerHTML = '';
+
+            modules.forEach((module, idx) => {
+                if (module.tests.length === 0) return;
+
+                const moduleDiv = document.createElement('div');
+                moduleDiv.className = 'module';
+
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'module-header';
+                headerDiv.onclick = () => toggleModule(idx);
+                headerDiv.innerHTML = `
+                    <div>
+                        <div class="module-title">${module.title}</div>
+                    </div>
+                    <div class="module-count">${module.tests.length} tests</div>
+                `;
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'module-content';
+                contentDiv.id = `module-${idx}`;
+
+                module.tests.forEach(test => {
+                    const testDiv = document.createElement('div');
+                    const isCompleted = testProgress[test.id]?.completed;
+                    testDiv.className = 'test-item' + (isCompleted ? ' completed' : '');
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'test-checkbox';
+                    checkbox.checked = isCompleted;
+                    checkbox.onchange = () => toggleTest(test.id, checkbox.checked, testDiv);
+
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'test-info';
+
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'test-title';
+                    titleDiv.textContent = test.title;
+
+                    const notesDiv = document.createElement('textarea');
+                    notesDiv.className = 'test-notes';
+                    notesDiv.placeholder = 'Add notes for this test...';
+                    notesDiv.value = testProgress[test.id]?.notes || '';
+                    notesDiv.onchange = () => saveTestNotes(test.id, notesDiv.value);
+
+                    infoDiv.appendChild(titleDiv);
+                    infoDiv.appendChild(notesDiv);
+
+                    testDiv.appendChild(checkbox);
+                    testDiv.appendChild(infoDiv);
+                    contentDiv.appendChild(testDiv);
+                });
+
+                moduleDiv.appendChild(headerDiv);
+                moduleDiv.appendChild(contentDiv);
+                container.appendChild(moduleDiv);
+            });
+        }
+
+        function toggleModule(idx) {
+            const contentDiv = document.getElementById(`module-${idx}`);
+            contentDiv.classList.toggle('active');
+        }
+
+        function toggleTest(testId, completed, element) {
+            if (!testProgress[testId]) {
+                testProgress[testId] = { completed: false, notes: '' };
+            }
+            testProgress[testId].completed = completed;
+            localStorage.setItem('testingProgress', JSON.stringify(testProgress));
+
+            if (completed) {
+                element.classList.add('completed');
+            } else {
+                element.classList.remove('completed');
+            }
+
+            updateProgress();
+        }
+
+        function saveTestNotes(testId, notes) {
+            if (!testProgress[testId]) {
+                testProgress[testId] = { completed: false, notes: '' };
+            }
+            testProgress[testId].notes = notes;
+            localStorage.setItem('testingProgress', JSON.stringify(testProgress));
+        }
+
+        function updateProgress() {
+            const total = allTests.length;
+            const completed = Object.values(testProgress).filter(p => p.completed).length;
+            const remaining = total - completed;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressFill').textContent = percentage + '%';
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('remainingCount').textContent = remaining;
+        }
+
+        function completeRandomTests() {
+            const randomTests = allTests.sort(() => Math.random() - 0.5).slice(0, 10);
+            randomTests.forEach(test => {
+                if (!testProgress[test.id]) {
+                    testProgress[test.id] = { completed: false, notes: '' };
+                }
+                testProgress[test.id].completed = true;
+                testProgress[test.id].notes = `✅ Passed on ${new Date().toLocaleDateString()}`;
+            });
+            localStorage.setItem('testingProgress', JSON.stringify(testProgress));
+            loadChecklist();
+            showMessage('✅ 10 random tests marked complete!');
+        }
+
+        function generateReport() {
+            const now = new Date();
+            const completed = Object.values(testProgress).filter(p => p.completed).length;
+            const total = allTests.length;
+
+            const report = {
+                metadata: {
+                    timestamp: now.toISOString(),
+                    date: now.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                    time: now.toLocaleTimeString('en-US', { hour12: true }),
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                },
+                summary: {
+                    totalTests: total,
+                    completed: completed,
+                    incomplete: total - completed,
+                    percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+                },
+                details: testProgress
+            };
+
+            console.log('Generated Report:', report);
+            showMessage(`✅ Report generated! Progress: ${completed}/${total} (${report.summary.percentage}%)`);
+            return report;
+        }
+
+        function downloadReport() {
+            const report = generateReport();
+            const dataStr = JSON.stringify(report, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+            link.download = `test-report-${dateStr}-${timeStr}.json`;
+
+            link.click();
+            showMessage(`📥 Report downloaded: ${link.download}`);
+        }
+
+        function clearProgress() {
+            if (confirm('🗑️ Clear all test progress? This cannot be undone.')) {
+                localStorage.removeItem('testingProgress');
+                testProgress = {};
+                loadChecklist();
+                showMessage('✅ Progress cleared!');
+            }
+        }
+
+        function showMessage(msg, type = 'success') {
+            const msgDiv = document.getElementById('successMsg');
+            msgDiv.textContent = msg;
+            msgDiv.className = 'success-message active';
+            setTimeout(() => {
+                msgDiv.classList.remove('active');
+            }, 3000);
+        }
+
+        // Load on page load
+        window.onload = loadChecklist;
+    </script>
+</body>
+</html>
