@@ -15,6 +15,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 const os = require('os');
 const fs = require('fs');
+const http = require('http');
 
 const app = express();
 const PORT = 8080;
@@ -92,6 +93,53 @@ function initializeLogs() {
 }
 
 initializeLogs();
+
+// Utility: Check service health
+function checkServiceHealth(service) {
+    return new Promise((resolve) => {
+        const config = CONFIG.services[service];
+        if (!config) {
+            resolve(false);
+            return;
+        }
+
+        const healthUrl = service === 'backend'
+            ? `http://localhost:${config.port}/health`
+            : `http://localhost:${config.port}`;
+
+        const timeout = setTimeout(() => {
+            resolve(false);
+        }, 2000);
+
+        const req = http.get(healthUrl, { timeout: 2000 }, (res) => {
+            clearTimeout(timeout);
+            resolve(res.statusCode < 500);
+        });
+
+        req.on('error', () => {
+            clearTimeout(timeout);
+            resolve(false);
+        });
+
+        req.on('timeout', () => {
+            clearTimeout(timeout);
+            req.destroy();
+            resolve(false);
+        });
+    });
+}
+
+// Utility: Wait for service health
+async function waitForServiceHealth(service, maxWaitMs = 30000) {
+    const startTime = Date.now();
+    while (Date.now() - startTime < maxWaitMs) {
+        if (await checkServiceHealth(service)) {
+            return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+    return false;
+}
 
 // Utility: Add log entry
 function addLog(service, message, type = 'info') {
@@ -181,18 +229,28 @@ app.get('/api/config', (req, res) => {
 });
 
 // Get service status
-app.get('/api/services', (req, res) => {
+app.get('/api/services', async (req, res) => {
     const status = {};
-    Object.keys(CONFIG.services).forEach(key => {
+    const services = Object.keys(CONFIG.services);
+
+    for (const key of services) {
+        const isRunning = processes[key] && !processes[key].killed;
+        let isHealthy = false;
+
+        if (isRunning) {
+            isHealthy = await checkServiceHealth(key);
+        }
+
         status[key] = {
             name: CONFIG.services[key].name,
-            running: processes[key] && !processes[key].killed,
+            running: isRunning,
+            healthy: isHealthy,
             port: CONFIG.services[key].port,
             url: CONFIG.services[key].url,
             swagger: CONFIG.services[key].swagger,
             logs: logs[key] || []
         };
-    });
+    }
     res.json(status);
 });
 
@@ -538,20 +596,53 @@ app.post('/api/stop/:service', (req, res) => {
     }
 });
 
-// Start all services
-app.post('/api/start-all', (req, res) => {
-    addLog('system', '[START] Starting ALL services...', 'warning');
+// Start all services (with ordered startup: backend first)
+app.post('/api/start-all', async (req, res) => {
+    addLog('system', '[START] Starting ALL services (ordered)...', 'warning');
 
-    Object.keys(CONFIG.services).forEach((service, index) => {
-        if (!CONFIG.services[service].optional) {
-            setTimeout(() => {
-                fetch(`http://localhost:${PORT}/api/start/${service}`, { method: 'POST' })
-                    .catch(err => console.error('Failed to start', service, err));
-            }, index * 1000);
+    try {
+        // 1. Start backend first
+        if (CONFIG.services.backend && !CONFIG.services.backend.optional) {
+            addLog('system', '[WAIT] Starting backend first...', 'warning');
+            await new Promise(resolve => {
+                fetch(`http://localhost:${PORT}/api/start/backend`, { method: 'POST' })
+                    .catch(err => console.error('Failed to start backend', err));
+                setTimeout(resolve, 1000);
+            });
+
+            // 2. Wait for backend health (max 30s)
+            addLog('system', '[WAIT] Waiting for backend health check...', 'warning');
+            const backendHealthy = await waitForServiceHealth('backend', 30000);
+
+            if (backendHealthy) {
+                addLog('system', '[OK] Backend is healthy', 'success');
+            } else {
+                addLog('system', '[WARN] Backend health check failed, continuing anyway', 'warning');
+            }
         }
-    });
 
-    res.json({ success: true, message: 'Starting all services...' });
+        // 3. Start frontend services in parallel
+        const frontends = Object.keys(CONFIG.services).filter(
+            service => service !== 'backend' && !CONFIG.services[service].optional
+        );
+
+        addLog('system', '[START] Starting frontend services...', 'warning');
+        await Promise.all(
+            frontends.map(service =>
+                new Promise(resolve => {
+                    fetch(`http://localhost:${PORT}/api/start/${service}`, { method: 'POST' })
+                        .catch(err => console.error('Failed to start', service, err));
+                    setTimeout(resolve, 500);
+                })
+            )
+        );
+
+        addLog('system', '[OK] All services started', 'success');
+        res.json({ success: true, message: 'All services started (backend first, then frontends)' });
+    } catch (error) {
+        addLog('system', `[ERROR] Start-all failed: ${error.message}`, 'error');
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Stop all services
@@ -689,7 +780,29 @@ app.get('/api/docs/:doctype', (req, res) => {
     }
 });
 
-// Health check
+// Health check (all services)
+app.get('/api/health', async (req, res) => {
+    const health = {};
+    const services = Object.keys(CONFIG.services);
+
+    for (const service of services) {
+        const isRunning = processes[service] && !processes[service].killed;
+        let isHealthy = false;
+
+        if (isRunning) {
+            isHealthy = await checkServiceHealth(service);
+        }
+
+        health[service] = {
+            running: isRunning,
+            healthy: isHealthy
+        };
+    }
+
+    res.json(health);
+});
+
+// Health check (DevHub only)
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });

@@ -195,14 +195,19 @@
             display: inline-block;
         }
 
-        .status-running {
-            background: rgba(0, 200, 0, 0.2);
-            color: #4ade80;
-        }
-
         .status-stopped {
             background: rgba(200, 0, 0, 0.2);
             color: #f87171;
+        }
+
+        .status-starting {
+            background: rgba(200, 150, 0, 0.2);
+            color: #facc15;
+        }
+
+        .status-healthy {
+            background: rgba(0, 200, 0, 0.2);
+            color: #4ade80;
         }
 
         .service-description {
@@ -900,12 +905,15 @@
                 Object.entries(status).forEach(([key, svc]) => {
                     const statusBadge = document.getElementById(`status-${key}`);
                     if (statusBadge) {
-                        if (svc.running) {
-                            statusBadge.textContent = 'Running';
-                            statusBadge.className = 'status-badge status-running';
-                        } else {
-                            statusBadge.textContent = 'Stopped';
+                        if (!svc.running) {
+                            statusBadge.textContent = '🔴 Stopped';
                             statusBadge.className = 'status-badge status-stopped';
+                        } else if (svc.healthy) {
+                            statusBadge.textContent = '🟢 Healthy';
+                            statusBadge.className = 'status-badge status-healthy';
+                        } else {
+                            statusBadge.textContent = '🟡 Starting...';
+                            statusBadge.className = 'status-badge status-starting';
                         }
                     }
 
