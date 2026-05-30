@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Report Generation Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        pre {
+            background: #1a2a4a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(74, 208, 225, 0.3);
+            overflow-x: auto;
+        }
+        h1 { color: #4dd0e1; }
+        h2 { color: #60a5fa; margin-top: 30px; }
+        .success { color: #4ade80; }
+        .info { color: #4dd0e1; }
+        .button {
+            padding: 10px 20px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .button:hover { background: #0052a3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Report Generation with Timestamp</h1>
+
+    <h2>Step 1: Simulate Test Progress</h2>
+    <button class="button" onclick="simulateTestProgress()">Simulate Completing 45 Tests</button>
+    <pre id="step1-output"></pre>
+
+    <h2>Step 2: Generate Report with Timestamp</h2>
+    <button class="button" onclick="generateAndDisplayReport()">Generate Report Now</button>
+    <pre id="step2-output"></pre>
+
+    <h2>Step 3: Test Download Filename</h2>
+    <button class="button" onclick="downloadTestReport()">Download Report (Check Filename)</button>
+    <pre id="step3-output"></pre>
+
+    <h2>Generated Report JSON</h2>
+    <pre id="report-output"></pre>
+
+    <script>
+        function simulateTestProgress() {
+            const output = document.getElementById('step1-output');
+
+            // Create mock test progress data
+            const progress = {};
+            const testIds = [
+                '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9',
+                '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '2.10', '2.11', '2.12',
+                '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10'
+            ];
+
+            testIds.forEach((id, idx) => {
+                progress[id] = {
+                    completed: idx < 15, // First 15 tests complete
+                    notes: idx < 15 ? `✅ Test ${id} passed` : 'Pending'
+                };
+            });
+
+            // Save to localStorage
+            localStorage.setItem('testingProgress', JSON.stringify(progress));
+
+            const completed = Object.values(progress).filter(p => p.completed).length;
+            const total = Object.keys(progress).length;
+
+            output.innerHTML = `<span class="success">✅ Progress Saved to LocalStorage</span>
+
+Total Tests: ${total}
+Completed: ${completed}
+Remaining: ${total - completed}
+Progress: ${Math.round((completed / total) * 100)}%
+
+Sample Data:
+${JSON.stringify(progress, null, 2).substring(0, 500)}...`;
+        }
+
+        function generateReport(progress) {
+            const now = new Date();
+            const completed = Object.values(progress).filter(p => p.completed).length;
+            const total = Object.keys(progress).length;
+
+            return {
+                metadata: {
+                    timestamp: now.toISOString(),
+                    date: now.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                    time: now.toLocaleTimeString('en-US', { hour12: true }),
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                },
+                summary: {
+                    totalTests: total,
+                    completed: completed,
+                    incomplete: total - completed,
+                    percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+                },
+                details: progress
+            };
+        }
+
+        function generateAndDisplayReport() {
+            const output = document.getElementById('step2-output');
+            const reportOutput = document.getElementById('report-output');
+
+            const progress = JSON.parse(localStorage.getItem('testingProgress') || '{}');
+            if (Object.keys(progress).length === 0) {
+                output.innerHTML = '<span style="color: #ef4444;">❌ No progress data. Click "Simulate" first.</span>';
+                return;
+            }
+
+            const report = generateReport(progress);
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+            const filename = `test-report-${dateStr}-${timeStr}.json`;
+
+            output.innerHTML = `<span class="success">✅ Report Generated with Timestamp</span>
+
+Filename: <span class="info">${filename}</span>
+
+Report Metadata:
+${JSON.stringify(report.metadata, null, 2)}
+
+Report Summary:
+${JSON.stringify(report.summary, null, 2)}`;
+
+            reportOutput.innerHTML = JSON.stringify(report, null, 2);
+        }
+
+        function downloadTestReport() {
+            const output = document.getElementById('step3-output');
+            const progress = JSON.parse(localStorage.getItem('testingProgress') || '{}');
+
+            if (Object.keys(progress).length === 0) {
+                output.innerHTML = '<span style="color: #ef4444;">❌ No progress data. Click "Simulate" first.</span>';
+                return;
+            }
+
+            const report = generateReport(progress);
+            const dataStr = JSON.stringify(report, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+            link.download = `test-report-${dateStr}-${timeStr}.json`;
+
+            output.innerHTML = `<span class="success">✅ Report Ready to Download</span>
+
+Filename: <span class="info">${link.download}</span>
+
+Click "Download Report" button to save:
+- File will be saved to your Downloads folder
+- Timestamp embedded in both filename and JSON metadata
+- Can be shared with team for documentation`;
+
+            // Actually trigger download
+            link.click();
+        }
+
+        // Initialize
+        window.onload = function() {
+            document.getElementById('step1-output').innerHTML = 'Click "Simulate Completing 45 Tests" to start';
+            document.getElementById('step2-output').innerHTML = 'Click "Generate Report Now" after step 1';
+            document.getElementById('step3-output').innerHTML = 'Click "Download Report" to test file download';
+        };
+    </script>
+</body>
+</html>
